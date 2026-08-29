@@ -5,6 +5,7 @@ when risk is high or critical.
 """
 
 from datetime import datetime
+import json
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -15,6 +16,12 @@ from models.schemas import SensorReadingIn, PredictionOut
 from prediction import get_risk_prediction
 
 router = APIRouter(prefix="/predictions", tags=["predictions"])
+
+
+# Import the manager from main (circular import workaround)
+def get_manager():
+    from main import manager
+    return manager
 
 
 @router.post("/", response_model=PredictionOut)
@@ -66,6 +73,33 @@ def create_prediction(reading: SensorReadingIn, db: Session = Depends(get_db)):
 
     db.commit()
     db.refresh(db_prediction)
+
+    # Broadcast new prediction via WebSocket
+    try:
+        manager = get_manager()
+        prediction_data = {
+            "id": db_prediction.id,
+            "site_name": db_prediction.site_name,
+            "risk_label": db_prediction.risk_label,
+            "risk_probability": float(db_prediction.risk_probability),
+            "risk_level": db_prediction.risk_level,
+            "created_at": db_prediction.created_at.isoformat() if db_prediction.created_at else None,
+        }
+        # Note: In a real app, we'd use background tasks to avoid blocking
+        import asyncio
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                loop.create_task(manager.broadcast_prediction(prediction_data))
+            else:
+                asyncio.run(manager.broadcast_prediction(prediction_data))
+        except:
+            # Fallback if asyncio fails
+            pass
+    except:
+        # Don't let WebSocket errors break the main flow
+        pass
+
     return db_prediction
 
 
