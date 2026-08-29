@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "../components/Navbar";
+import SidebarLayout from "../components/SidebarLayout";
 
 export const metadata: Metadata = {
-  title: "Landslide Sentinel AI",
-  description: "Real-time landslide risk monitoring and alerting",
+  title: "Landslide Sentinel AI — Real-Time Risk Monitoring",
+  description: "Professional landslide risk monitoring and alerting system powered by AI",
 };
 
 export default function RootLayout({
@@ -15,8 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
+        <SidebarLayout>{children}</SidebarLayout>
       </body>
     </html>
   );
