@@ -1,37 +1,26 @@
-import Link from "next/link";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
-  const links = [
-    { href: "/dashboard", label: "Dashboard", desc: "Live risk overview & recent predictions" },
-    { href: "/map", label: "Risk Map", desc: "Geographic view of monitored sites" },
-    { href: "/alerts", label: "Alerts", desc: "Active landslide risk alerts" },
-    { href: "/reports", label: "Reports", desc: "Community & field observations" },
-  ];
+  const router = useRouter();
+
+  // Redirect to dashboard by default
+  useEffect(() => {
+    router.replace("/dashboard");
+  }, [router]);
 
   return (
-    <div className="space-y-8">
-      <section className="text-center py-12">
-        <h1 className="text-4xl font-bold tracking-tight text-white">
-          Landslide Sentinel AI
-        </h1>
-        <p className="mt-3 text-slate-400 max-w-xl mx-auto">
-          Monitoring rainfall, slope, and soil conditions to predict landslide
-          risk before it happens.
-        </p>
-      </section>
-
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 hover:border-slate-600 transition-colors"
-          >
-            <h2 className="text-lg font-semibold text-white">{link.label}</h2>
-            <p className="mt-1 text-sm text-slate-400">{link.desc}</p>
-          </Link>
-        ))}
-      </section>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <div className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-purple))" }}>
+          <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 19h20L12 2zm0 4l7 13H5l7-13z" />
+          </svg>
+        </div>
+        <h1 className="text-xl font-semibold text-white">Loading Sentinel AI…</h1>
+      </div>
     </div>
   );
 }
